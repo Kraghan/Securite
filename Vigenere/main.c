@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 
 char* chiffre(char* str, int strSize, char* key, int keySize)
 {
@@ -29,12 +30,10 @@ float calculIndiceCoincidence(char* str, float strSize)
 {
     int i;
 
-    /*float* tab = malloc(26*sizeof(float));
+    float* tab[26];
 
-    for(i = 0; i < 26; i++)
-    {
-        tab[i] = 0.0;
-    }
+    // correct juste parce que je rempli de 0
+    memset((void *)tab,0,26*sizeof(int));
 
     // On compte le nombre de char
     for(i = 0; i < strSize; i++)
@@ -99,6 +98,8 @@ int getKeySize(char* str, int strSize, float indiceLangue)
 
             float indice = calculIndiceCoincidence(strRaccourci,(float)sizeStrRaccourci);
 
+            free(strRaccourci);
+
             /*
             float ecart = indiceLangue - indice;
 
@@ -118,6 +119,8 @@ int getKeySize(char* str, int strSize, float indiceLangue)
 
         keySize++;
     }
+    free(strPure);
+
     return keySizeSaved;
 }
 
