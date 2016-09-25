@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include <errno.h>
 #include <string.h>
+#define MODULO(x,y) ((x%y + y) % y)
 
-char* chiffre(char* str, int strSize, char* key, int keySize)
+char* dechiffre(char* str, int strSize, char* key, int keySize)
 {
     char* result = malloc(strSize * sizeof(char));
     int j = 0;
@@ -26,25 +27,37 @@ char* chiffre(char* str, int strSize, char* key, int keySize)
     return result;
 }
 
-int main()
+int main(int argc, char** argv)
 {
-    FILE* fp = fopen("text.txt","r");
+    if(argc != 3){
+        perror("Usage : caesar_encrypt <decalage> <texte>");
+        exit(-1);
+    }
 
-    fseek(fp,0,SEEK_END);
+    int fsize = strlen(argv[2])+1;
 
-    int fsize = ftell(fp)+1;
+    int numKey = MODULO(atoi(argv[1]),26);
 
-    char* key = "TEST";
+    char key = 'A';
 
-    fseek(fp,0,0);
+    int i;
 
-    char * str = malloc(fsize * sizeof(char));
+    for(i = 0; i < numKey; i ++){
+        key++;
+    }
 
-    fgets(str,fsize,fp);
+    printf("%c\n",(char)key);
 
-    char* result = chiffre(str,fsize,key,4);
+    char* str = argv[2];
+
+    char* result = dechiffre(str,fsize,key,keysize);
+
+    free(str);
 
     printf("%s\n",result);
 
+    free(result);
+
     return 0;
 }
+
