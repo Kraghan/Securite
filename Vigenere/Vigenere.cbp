@@ -11,6 +11,7 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters='&quot;USFCHYJ CX WMBL YF MXBLX WI LXLX HENXGM ESFZ, BP XTNX TBXR XTBVW WXW WLLEAL TPGKL N&apos;WVKMK IHYJ GX VAXG HAKX P&apos;ZBLXGBKI VX WMJX JYW VT VWFIPA VX XJNV HW FXVVX. CI KNBW S IXY HKXW KNK UMX FSF VHHW YHRUMBSFGX, G&apos;WLM NMLMI DX MIPMX UMB XWL ITW SLLIR EHRY.&quot;' />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
@@ -31,16 +32,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="main.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="vigenere_break.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="vigenere_decrypt.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="vigenere_encrypt.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>
