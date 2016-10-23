@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1476091649 source:c:\users\madjo\onedrive\cours\licence\sécurité\securite\substitution\substitution_encrypt.c
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<string.h>
+
+1477155432 source:c:\users\madjo\onedrive\cours\licence\sécurité\securite\substitution\substitution_break.c
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<string.h>
+
