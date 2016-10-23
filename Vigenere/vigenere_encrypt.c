@@ -1,63 +1,56 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
-#define MODULO(x,y) ((x%y + y) % y)
+#define MODULO(x,y) ((x % y + y) % y)
 
-char* dechiffre(char* str, int strSize, char* key, int keySize)
+char* chiffre(char* str, int strSize, char* key, int keySize)
 {
-    char* result = malloc(strSize * sizeof(char));
-    int j = 0;
-    int i;
-    for(i = 0; i < strSize; i++){
-        if(str[i] >= 'A' && str[i] <= 'Z'){
-            result[i] = str[i] + ((key[j] - 'A')%26);
-            if(result[i] > 'Z'){
-                result[i] = '@' + (result[i] - 'Z');
-            }
-            j++;
+    char* result = (char*) malloc(sizeof(char) * strSize);
+    int i,j = 0;
+    for(i = 0; i < strSize; ++i)
+    {
+        if('A' <= str[i] && str[i] <= 'Z')
+        {
+            result[i] = 'A' + MODULO((str[i] - 'A') + (key[j] - 'A'),26);
+            ++j;
+            if(j == keySize)
+                j = 0;
         }
-        else{
+        else
             result[i] = str[i];
-        }
-
-        if(j == keySize)
-            j = 0;
     }
     return result;
 }
 
+void displayString(char* string, int size)
+{
+    int i;
+    for(i = 0; i < size; ++i)
+    {
+        printf("%c",string[i]);
+    }
+    printf("\n");
+}
+
+
 int main(int argc, char** argv)
 {
-    if(argc != 3){
-        perror("Usage : caesar_encrypt <decalage> <texte>");
+    if(argc != 3 ){
+        perror("Usage : vigenere_encrypt <texte> <cle>");
         exit(-1);
     }
 
-    int fsize = strlen(argv[2])+1;
+    int fsize = strlen(argv[1]);
+    char* str = argv[1];
 
-    int numKey = MODULO(atoi(argv[1]),26);
+    int keysize = strlen(argv[2]);
+    char* key = argv[2];
 
-    char key = 'A';
+    char* result = chiffre(str,fsize,key,keysize);
 
-    int i;
-
-    for(i = 0; i < numKey; i ++){
-        key++;
-    }
-
-    printf("%c\n",(char)key);
-
-    char* str = argv[2];
-
-    char* result = dechiffre(str,fsize,key,keysize);
-
-    free(str);
-
-    printf("%s\n",result);
+    displayString(result,fsize);
 
     free(result);
 
     return 0;
 }
-

@@ -11,3 +11,47 @@
 	<errno.h>
 	<string.h>
 
+1477255349 source:e:\users\kraghan\workspace\c\securite\substitution\substitution_break.c
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<string.h>
+
+1477240365 source:e:\users\kraghan\workspace\c\securite\cesar\other\caesar_break.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1477251100 source:e:\users\kraghan\workspace\c\securite\vigenere\vigenere_break.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1477251962 source:e:\users\kraghan\workspace\c\securite\vigenere\vigenere_encrypt.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1477254400 source:e:\users\kraghan\workspace\c\securite\substitution\substitution_decrypt.c
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<string.h>
+
+1477254799 source:e:\users\kraghan\workspace\c\securite\cesar\caesar_encrypt.c
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<string.h>
+
+1477255050 source:e:\users\kraghan\workspace\c\securite\cesar\caesar_decrypt.c
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<string.h>
+
+1477240500 source:e:\users\kraghan\workspace\c\securite\cesar\caesar_break.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+

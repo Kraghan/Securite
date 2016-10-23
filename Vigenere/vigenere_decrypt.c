@@ -1,43 +1,54 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#define MODULO(x,y) ((x % y + y) % y)
+
+char* dechiffre(char* str, int strSize, char* key, int keySize)
+{
+    char* result = (char*) malloc(sizeof(char) * strSize);
+    int i,j = 0;
+    for(i = 0; i < strSize; ++i)
+    {
+        if('A' <= str[i] && str[i] <= 'Z')
+        {
+            result[i] = 'A' + MODULO((str[i] - 'A') - (key[j] - 'A'),26);
+            ++j;
+            if(j == keySize)
+                j = 0;
+        }
+        else
+            result[i] = str[i];
+    }
+    return result;
+}
+
+void displayString(char* string, int size)
+{
+    int i;
+    for(i = 0; i < size; ++i)
+    {
+        printf("%c",string[i]);
+    }
+    printf("\n");
+}
+
 
 int main(int argc, char** argv)
 {
-    if(argc != 2){
-
+    if(argc != 3 ){
+        perror("Usage : vigenere_decrypt <texte> <cle>");
+        exit(-1);
     }
 
-    FILE* fp = fopen("text.txt","r");
+    int fsize = strlen(argv[1]);
+    char* str = argv[1];
 
-    fseek(fp,0,SEEK_END);
+    int keysize = strlen(argv[2]);
+    char* key = argv[2];
 
-    int fsize = ftell(fp)+1;
+    char* result = dechiffre(str,fsize,key,keysize);
 
-    char key = 'Z';
-
-    fseek(fp,0,0);
-
-    char * str = malloc(fsize * sizeof(char));
-
-    fgets(str,fsize,fp);
-
-    fclose(fp);
-
-    char* result = chiffre(str,fsize,key,4);
-
-    free(str);
-
-    printf("%s\n",result);
-
-    char resultkey;
-
-    result = dechiffreBruteForce(result,fsize, &resultkey);
-
-    printf("Resultat brutforce : cle : %c %s\n",resultkey,result);
-
-    //result = dechiffreFrequencielle(result,fsize);
-
-    //printf("Resultat frequencielle : %s\n",result);
+    displayString(result,fsize);
 
     free(result);
 

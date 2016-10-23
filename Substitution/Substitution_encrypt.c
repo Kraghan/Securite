@@ -4,15 +4,26 @@
 #include <string.h>
 #define MODULO(x,y) ((x%y + y) % y)
 
+void displayText(char* str, int strsize)
+{
+    int i;
+    printf("\n");
+    for(i = 0; i < strsize; ++i)
+    {
+        printf("%c",str[i]);
+    }
+    printf("\n");
+}
+
 char* generateKeyTable(char* init)
 {
     char* result = (char*)malloc(26*sizeof(char));
-    int i,j,found;
+    int i,j,cpt = 0,found;
 
     for(i = 0; i < strlen(init);++i)
     {
         found = 0;
-        for(j = 0; j < 26; ++j)
+        for(j = 0; j < cpt; ++j)
         {
             if(result[j] == init[i])
             {
@@ -21,19 +32,19 @@ char* generateKeyTable(char* init)
             }
         }
         if(found == 0)
-            result[i] = init[i];
+        {
+            result[cpt] = init[i];
+            ++cpt;
+        }
     }
 
-    int cpt = i;
-
-    char alpha;
+    char alpha = 'A';
 
     for(i = 0; i < 26; ++i)
     {
-        alpha = 'A'+i;
         found = 0;
 
-        for(j = 0; j < 26; ++j)
+        for(j = 0; j < cpt; ++j)
         {
             if(result[j] == alpha)
             {
@@ -46,6 +57,7 @@ char* generateKeyTable(char* init)
             result[cpt] = alpha;
             ++cpt;
         }
+        alpha++;
     }
 
     return result;
@@ -73,21 +85,22 @@ char* chiffre(char* str, int fsize, char* key)
 int main(int argc, char** argv)
 {
     if(argc != 3){
-        perror("Usage : substitution_encrypt <key> <text>");
+        perror("Usage : substitution_encrypt <text> <key>");
         exit(-1);
     }
 
-    int fsize = strlen(argv[2]);//+1;
+    int fsize = strlen(argv[1]);//+1;
 
-    char* startKey = (char*)argv[1];
+    char* startKey = (char*)argv[2];
 
-    char* str = argv[2];
+    char* str = argv[1];
 
     char* key = generateKeyTable(startKey);
-    printf("%s\n",key);
-
+    printf("Key\n");
+    displayText(key,26);
     char* result = chiffre(str,fsize,key);
-    printf("%s\n",result);
+    printf("Encrypt\n");
+    displayText(result,fsize);
 
     free(key);
     free(result);

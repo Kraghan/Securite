@@ -1,6 +1,58 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define MODULO(x,y) ((x % y + y) % y)
+
+struct key
+{
+    int size;
+    char* key;
+};
+
+char* dechiffre(char* str, int strSize, char* key, int keySize)
+{
+    char* result = (char*) malloc(sizeof(char) * strSize);
+    int i,j = 0;
+    for(i = 0; i < strSize; ++i)
+    {
+        if('A' <= str[i] && str[i] <= 'Z')
+        {
+            result[i] = 'A' + MODULO((str[i] - 'A') - (key[j] - 'A'),26);
+            ++j;
+            if(j == keySize)
+                j = 0;
+        }
+        else
+            result[i] = str[i];
+    }
+    return result;
+}
+
+void displayString(char* string, int size)
+{
+    int i;
+    for(i = 0; i < size; ++i)
+    {
+        printf("%c",string[i]);
+    }
+    printf("\n");
+}
+
+char** stringDivider(char* string,int strSize,int nbString)
+{
+    char** resultat;
+    int i;
+    resultat = (char**) malloc(nbString*sizeof(char*));
+
+    for(i = 0; i < nbString; ++i)
+        resultat[i] = (char*) malloc((strSize/nbString+1)*sizeof(char));
+
+    for(i = 0; i < strSize; ++i)
+    {
+        resultat[i%nbString][i/nbString] = string[i];
+    }
+    return resultat;
+}
 
 float calculIndiceCoincidence(char* str, float strSize)
 {
@@ -24,75 +76,40 @@ float calculIndiceCoincidence(char* str, float strSize)
     {
         indice += (tab[i]*(tab[i]-1.0))/(strSize * (strSize - 1.0));
     }
-
     return indice;
 
 }
 
-int getKeySize(char* str, int strSize, float indiceLangue)
+int getKeySize(char* str, int strSize)
 {
-    int cpt,pureSize = 0;
-
-    char* strPure = malloc(strSize*sizeof(char));
-
-    // On enlève les caractères spéciaux
-    for(cpt = 0; cpt < strSize; cpt++)
-    {
-        if(str[cpt] >= 'A' && str[cpt] <= 'Z'){
-            strPure[pureSize] = str[cpt];
-            pureSize++;
-        }
-    }
-
-    int keySizeSaved;
-
-    float ecartSaved = 1.0;
-
     int keySize = 1;
 
-    while(keySize < pureSize)
+    while(keySize < 16)
     {
+        char** stringDivided = stringDivider(str,strSize,keySize);
         int i;
 
-        for(i = 0; i < keySize; i++)
+        float sum = 0.0f;
+
+        for(i = 0; i < keySize; ++i)
         {
+            float strDividedSize = strSize/keySize;
+            if(i < strSize%keySize)
+                ++strDividedSize;
 
-            int sizeStrRaccourci = pureSize/keySize + pureSize%keySize;
-            char* strRaccourci = malloc(sizeStrRaccourci * sizeof(char));
-
-            int j;
-            int k = 0;
-
-            for(j = i; j < pureSize; j += keySize)
-            {
-                strRaccourci[k] = strPure[j];
-                k++;
-            }
-
-            float indice = calculIndiceCoincidence(strRaccourci,(float)sizeStrRaccourci);
-
-            free(strRaccourci);
-
-            float ecart = indiceLangue - indice;
-
-            if(ecart < 0)
-            {
-                ecart *= -1;
-            }
-
-            if(ecart < ecartSaved)
-            {
-                ecartSaved = ecart;
-                keySizeSaved = keySize;
-            }
-
+            sum += calculIndiceCoincidence(stringDivided[i],strDividedSize);
+            free(stringDivided[i]);
         }
+        free(stringDivided);
+
+        float moyenne = sum/keySize;
+        if(moyenne > 0.074)
+            return keySize;
 
         keySize++;
     }
-    free(strPure);
 
-    return keySizeSaved;
+    return keySize;
 }
 
 char getKeyFrequencielle(char* str, int strSize)
@@ -123,47 +140,38 @@ char getKeyFrequencielle(char* str, int strSize)
         }
     }
 
-    int key = indexMax - 4;
+    int key = MODULO(indexMax - 4,26);
     return key;
 }
 
-char* breaker(char* str, int strsize)
+struct key getKey(char* str, int strsize)
 {
-    int keySize = getKeySize(str,strsize,0.074);
+    struct key k;
+
+    int keySize = getKeySize(str,strsize);
     printf("key size : %d\n",keySize);
 
-    int cpt,pureSize = 0;
-
-    char* strPure = malloc(strsize*sizeof(char));
-
-    // On enlève les caractères spéciaux
-    for(cpt = 0; cpt < strsize; cpt++)
-    {
-        if(str[cpt] >= 'A' && str[cpt] <= 'Z'){
-            strPure[pureSize] = str[cpt];
-            pureSize++;
-        }
-    }
+    int i;
 
     // On divise la chaine en keysize chaine plus petite et on cherche à la façon du code César
     char * key = malloc(keySize*sizeof(char));
-    for(cpt = 0; cpt < keySize; cpt++)
+    char** stringDivided = stringDivider(str,strsize,keySize);
+
+    for(i = 0; i < keySize; i++)
     {
-        char* strRaccourcie = malloc((pureSize/keySize + 1)*sizeof(char));
-        unsigned int i,cursor = 0;
-        for(i = cpt; i < pureSize ;i+=keySize)
-        {
-            strRaccourcie[cursor] = strPure[i];
-            cursor++;
-        }
-        key[cpt] = 'A'+getKeyFrequencielle(strRaccourcie,cursor);
-        printf("%c : %d\n",key[cpt],key[cpt]);
-        free(strRaccourcie);
+        int strDividedSize = strsize/keySize;
+            if(i < strsize%keySize)
+                ++strDividedSize;
+
+        key[i] = 'A'+getKeyFrequencielle(stringDivided[i],strDividedSize);
+        free(stringDivided[i]);
     }
+    free(stringDivided);
 
-    printf("%s\n",key);
+    k.key = key;
+    k.size = keySize;
 
-    return str;
+    return k;
 }
 
 int main(int argc, char** argv)
@@ -174,14 +182,39 @@ int main(int argc, char** argv)
         exit(-1);
     }
 
-    char* result;
-
+    // On purifie la chaine
     int fsize = strlen(argv[1]);
-    printf("strSize : %d\n", fsize);
     char* str = argv[1];
-    result = breaker(str,fsize);
-    printf("Resultat breaker : %s\n",result);
+
+    int i,pureSize = 0;
+    char* strPure = malloc(fsize*sizeof(char));
+    for(i = 0; i < fsize; ++i)
+    {
+        if(str[i] >= 'A' && str[i] <= 'Z')
+        {
+            strPure[pureSize] = str[i];
+            ++pureSize;
+        }
+    }
+    printf("Chaine chiffree : \n");
+    displayString(str,fsize);
+    printf("Chaine pure : \n");
+    displayString(strPure,pureSize);
+
+    // On brise le chiffrement
+    struct key key = getKey(strPure,pureSize);
+    printf("Cle : \n");
+    displayString(key.key,key.size);
+
+    char* result = dechiffre(str,fsize,key.key,key.size);
+
+    printf("Chaine dechiffree : \n");
+    displayString(result,fsize);
+
+    free(key.key);
     free(result);
+    free(strPure);
+    //free(result);*/
 
     return 0;
 }

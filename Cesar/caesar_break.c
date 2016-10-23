@@ -1,27 +1,65 @@
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-*char* dechiffreBruteForce(char* str, int strSize, char* key)
+#define MODULO(x,y) ((x % y + y) % y)
+
+void displayText(char* str, int strsize)
+{
+    int i;
+    printf("\n");
+    for(i = 0; i < strsize; ++i)
+    {
+        printf("%c",str[i]);
+    }
+    printf("\n");
+}
+
+char* dechiffre(char* str, int strSize,char key)
 {
     char* result = malloc(strSize * sizeof(char));
+    int j;
+    for(j = 0; j < strSize; j++){
+        if(str[j] >= 'A' && str[j] <= 'Z'){
+            result[j] = str[j] - MODULO((key - 'A'),26);
+            if(result[j] < 'A'){
+                result[j] ='[' - ('A' - result[j]);
+            }
+        }
+        else{
+            result[j] = str[j];
+        }
+    }
+    return result;
+}
+
+char* dechiffreInt(char* str, int strSize,int key)
+{
+    char* result = malloc(strSize * sizeof(char));
+    int j;
+    for(j = 0; j < strSize; j++){
+        if(str[j] >= 'A' && str[j] <= 'Z'){
+            result[j] = 'A' + MODULO((str[j] - 'A') - key,26);
+        }
+        else{
+            result[j] = str[j];
+        }
+    }
+    return result;
+}
+
+char* dechiffreBruteForce(char* str, int strSize)
+{
+    char* result = "Erreur : non déchiffré";
+    char* strDechiffre;
     char i;
 
     for(i = 'A'; i <= 'Z'; i++)
     {
-        int j;
-        for(j = 0; j < strSize; j++){
-            if(str[j] >= 'A' && str[j] <= 'Z'){
-                result[j] = str[j] - ((i - 'A')%26);
-                if(result[j] < 'A'){
-                    result[j] ='[' - ('A' - result[j]);
-                }
-            }
-            else{
-                result[j] = str[j];
-            }
-        }
+        strDechiffre = dechiffre(str,strSize,i);
 
-        printf("Cle : %c -> /n %s /n/n Correct ? Y/N",i,result);
+        printf("Cle : %c -> /n %s /n/n Correct ? Y/N",i,strDechiffre);
 
         char c = ' ';
         do{
@@ -30,57 +68,76 @@
 
         if(c == 'Y' || c == 'y')
         {
-            *key = i;
+            result = strDechiffre;
             break;
         }
     }
     return result;
 }
 
-char* dechiffreFrequencielle()
+char* dechiffreFrequencielle(char* str, int strSize)
 {
 
+    int tab[26];
+
+    memset(tab,0,26*sizeof(int));
+
+    int i,j = 0;
+    for(i = 0; i < strSize; i++)
+    {
+        if(str[i] >= 'A' && str[i] <= 'Z')
+        {
+            tab[str[i] - 'A']++;
+            j++;
+        }
+    }
+
+    float frequence[26];
+    int indexMax = -1;
+
+    for(i = 0; i < 26; i++)
+    {
+        frequence[i] = (float)tab[i]/(float)j;
+        if(indexMax == -1 || frequence[indexMax] < frequence[i]){
+            indexMax = i;
+        }
+    }
+
+    int key = indexMax - 4;
+    return dechiffreInt(str,strSize,key);
 }
 
 int main(int argc, char** argv)
 {
-    if(argc !== 2){
-        
+
+    if(argc < 2 || argc > 3){
+        perror("Usage : caesar_encrypt [-B] <texte>");
+        exit(-1);
     }
-    
-    FILE* fp = fopen("text.txt","r");
 
-    fseek(fp,0,SEEK_END);
+    if(argc == 3 && (strcmp(argv[1],"-B") != 0)){
+        perror("Paramètre inconnu : -B pour méthode bruteforce");
+        exit(-2);
+    }
 
-    int fsize = ftell(fp)+1;
+    char* result;
 
-    char key = 'Z';
+    if(argc == 3){
 
-    fseek(fp,0,0);
-
-    char * str = malloc(fsize * sizeof(char));
-
-    fgets(str,fsize,fp);
-
-    fclose(fp);
-
-    char* result = chiffre(str,fsize,key,4);
-
-    free(str);
-
-    printf("%s\n",result);
-
-    char resultkey;
-
-    result = dechiffreBruteForce(result,fsize, &resultkey);
-
-    printf("Resultat brutforce : cle : %c %s\n",resultkey,result);
-
-    //result = dechiffreFrequencielle(result,fsize);
-
-    //printf("Resultat frequencielle : %s\n",result);
+        int fsize = strlen(argv[2]);
+        char* str = argv[2];
+        result = dechiffreBruteForce(str,fsize);
+        printf("Resultat brutforce :\n");
+        displayText(result,fsize);
+    }
+    else{
+        int fsize = strlen(argv[1]);
+        char* str = argv[1];
+        result = dechiffreFrequencielle(str,fsize);
+        printf("Resultat frequencielle :\n");
+        displayText(result,fsize);
+    }
 
     free(result);
-
     return 0;
 }
